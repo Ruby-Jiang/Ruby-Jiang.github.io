@@ -7,31 +7,59 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>Copyright © 2021-2021, Xi Jiang; all rights reserved.</copyright>
-    <lastBuildDate>Mon, 28 Jun 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://Ruby-Jiang.github.io/tags/mysql/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 27 Jun 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://Ruby-Jiang.github.io/tags/mysql/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Maze game and BFS(Leetcode #490 #505)</title>
-      <link>https://Ruby-Jiang.github.io/post/development/maze-leetcode/</link>
-      <pubDate>Mon, 28 Jun 2021 00:00:00 +0000</pubDate>
-      
-      <guid>https://Ruby-Jiang.github.io/post/development/maze-leetcode/</guid>
-      <description>
-        
-          
-        
-      </description>
-    </item>
-    
-    <item>
-      <title>InnoDB storage engine basic architecture review</title>
-      <link>https://Ruby-Jiang.github.io/post/development/mysql-innodb/</link>
+      <title>InnoDB storage engine page structure review</title>
+      <link>https://Ruby-Jiang.github.io/post/mysql-innodb/</link>
       <pubDate>Sun, 27 Jun 2021 00:00:00 +0000</pubDate>
       
-      <guid>https://Ruby-Jiang.github.io/post/development/mysql-innodb/</guid>
+      <guid>https://Ruby-Jiang.github.io/post/mysql-innodb/</guid>
       <description>
         
           &lt;p&gt;After MySQL has done the optimization work, the component that actually executes the SQL statements is the storage engine. Among MySQL&#39;s many engines, InnoDB is currently the default storage engine that we widely use.&lt;/p&gt;
-&lt;p&gt;InnoDB uses a B+Tree structure for its indexes. A B+Tree is particularly efficient when data doesn’t fit in memory and must be read from the disk, as it ensures that a fixed maximum number of reads would be required to access any data requested, based only on the depth of the tree, which scales nicely.&lt;/p&gt;
-&lt;p&gt;Reference: &lt;a href=&#34;https://blog.jcole.us/2013/01/10/btree-index-structures-in-innodb/&#34;&gt;https://blog.jcole.us/2013/01/10/btree-index-structures-in-innodb/&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;InnoDB uses a B+Tree structure for its indexes. A B+Tree is particularly efficient when data doesn’t fit in memory and must be read from the disk, as it ensures that a fixed maximum number of reads would be required to access any data requested, based only on the depth of the tree, which scales nicely&lt;sup id=&#34;fnref:1&#34;&gt;&lt;a href=&#34;#fn:1&#34; class=&#34;footnote-ref&#34; role=&#34;doc-noteref&#34;&gt;1&lt;/a&gt;&lt;/sup&gt;.&lt;/p&gt;
+&lt;p align=&#34;center&#34;&gt;
+    &lt;img src=&#34;../../images/B+tree.png&#34; width=&#34;600&#34; /&gt;
+&lt;/p&gt;
+&lt;h3 id=&#34;mysql-record-storage&#34;&gt;MySql record storage&lt;/h3&gt;
+&lt;h4 id=&#34;header&#34;&gt;Header&lt;/h4&gt;
+&lt;p&gt;The control information of the current page is recorded, including the page pointers of the left and right sibling pages (the left and right pointers of the B+ tree) and page usage.&lt;/p&gt;
+&lt;h4 id=&#34;dummy-record&#34;&gt;Dummy record&lt;/h4&gt;
+&lt;p&gt;Take the clustered index as an example: the largest virtual record of the page (larger than the primary key of the page memory) and the smallest virtual record (smaller than the primary key of the page memory) are saved, which is convenient for query (also the structure of the B+ tree)&lt;/p&gt;
+&lt;h4 id=&#34;record-heap&#34;&gt;Record heap&lt;/h4&gt;
+&lt;p&gt;Row record storage block (including stored and deleted records), these record heaps are all in leaf nodes, non-leaf nodes do not store data and only store indexes (this is also the benefit of B+ trees)&lt;/p&gt;
+&lt;h4 id=&#34;free-space-linked-list&#34;&gt;Free space linked list&lt;/h4&gt;
+&lt;p&gt;Linked list of deleted records&lt;/p&gt;
+&lt;h4 id=&#34;unallocated-space&#34;&gt;Unallocated space&lt;/h4&gt;
+&lt;p&gt;Unused space&lt;/p&gt;
+&lt;h4 id=&#34;slot-area&#34;&gt;Slot area&lt;/h4&gt;
+&lt;p&gt;The page links the information of other pages through the two pointers on the left and right of the head, so there will be many linked lists. Then how to find the required records from so many linked lists is to point to a certain page through the pointer information in the slot area memory, such as dichotomy , Divided into many blocks, each slot points to the corresponding block, which also involves the use of traversal and dichotomy when MySql queries in the industry&lt;/p&gt;
+&lt;h4 id=&#34;footer&#34;&gt;Footer&lt;/h4&gt;
+&lt;p&gt;As long as it is the verification information of the storage page&lt;/p&gt;
+&lt;br&gt;
+&lt;h3 id=&#34;mysql-maintaining-in-page-records&#34;&gt;MySql maintaining in-page records&lt;/h3&gt;
+&lt;h4 id=&#34;order-guarantee&#34;&gt;Order guarantee&lt;/h4&gt;
+&lt;p&gt;There are two order guarantees&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;Physically orderly&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Logical order (MySql&#39;s choice)&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h4 id=&#34;insertion-strategy&#34;&gt;Insertion strategy&lt;/h4&gt;
+&lt;p&gt;Linked list of unallocated space and free space in Page&lt;/p&gt;
+&lt;h4 id=&#34;in-page-inquiries&#34;&gt;In-page inquiries&lt;/h4&gt;
+&lt;p&gt;traversal and binary search (using Slot area)&lt;/p&gt;
+&lt;section class=&#34;footnotes&#34; role=&#34;doc-endnotes&#34;&gt;
+&lt;hr&gt;
+&lt;ol&gt;
+&lt;li id=&#34;fn:1&#34; role=&#34;doc-endnote&#34;&gt;
+&lt;p&gt;&lt;a href=&#34;https://blog.jcole.us/2013/01/10/btree-index-structures-in-innodb/&#34;&gt;https://blog.jcole.us/2013/01/10/btree-index-structures-in-innodb/&lt;/a&gt;&amp;#160;&lt;a href=&#34;#fnref:1&#34; class=&#34;footnote-backref&#34; role=&#34;doc-backlink&#34;&gt;&amp;#x21a9;&amp;#xfe0e;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/section&gt;
 
         
       </description>

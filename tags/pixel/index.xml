@@ -10,17 +10,16 @@
     <lastBuildDate>Mon, 10 May 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://Ruby-Jiang.github.io/tags/pixel/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>My pixel practice 212 x 153 pixels and 32 frames gif</title>
-      <link>https://Ruby-Jiang.github.io/post/aseprite/</link>
+      <link>https://Ruby-Jiang.github.io/post/development/aseprite/</link>
       <pubDate>Mon, 10 May 2021 00:00:00 +0000</pubDate>
       
-      <guid>https://Ruby-Jiang.github.io/post/aseprite/</guid>
+      <guid>https://Ruby-Jiang.github.io/post/development/aseprite/</guid>
       <description>
         
           &lt;p&gt;A fantasy visualization of my dear cousin.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/cousin.gif&#34; width=&#34;600&#34; /&gt;&lt;/p&gt;
-&lt;!-- ![::img-medium](../../images/cousin.gif) --&gt;
+&lt;p&gt;&lt;img src=&#34;../../../images/cousin.gif&#34; width=&#34;600&#34; /&gt;&lt;/p&gt;
 &lt;p&gt;Set different layer and frame in Aseprite.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/asepriteUI.png&#34; width=&#34;600&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../../images/asepriteUI.png&#34; width=&#34;600&#34; /&gt;&lt;/p&gt;
 
         
       </description>
